@@ -748,6 +748,403 @@
     link.href = canvas.toDataURL("image/png");
     link.click();
   }
+</script> 
+  <!DOCTYPE html>
+<html lang="bn">
+<head>
+  <meta charset="UTF-8">
+  <title>PNG Islamic Cartoon Studio</title>
+  <style>
+    *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif;}
+    body{
+      background:#020813;
+      color:#f5f5f5;
+      height:100vh;
+      display:flex;
+      flex-direction:column;
+    }
+    header{
+      padding:8px 16px;
+      background:#02040a;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:0 2px 6px rgba(0,0,0,0.6);
+    }
+    .brand{font-weight:700;color:#ffd32a;}
+    header button{
+      padding:6px 14px;border-radius:18px;border:none;
+      background:#1abc9c;color:#000;font-weight:600;
+      cursor:pointer;font-size:13px;
+    }
+
+    .layout{
+      flex:1;
+      display:grid;
+      grid-template-columns:230px 1fr;
+      gap:8px;
+      padding:8px;
+    }
+    .panel{
+      background:#020915;
+      border-radius:8px;
+      border:1px solid #0b1c33;
+      padding:8px;
+      overflow:auto;
+    }
+    h2{font-size:14px;margin-bottom:6px;color:#ffeaa7;}
+    .sub{font-size:11px;opacity:0.8;margin-bottom:6px;}
+
+    /* অ্যাসেট লিস্ট */
+    .asset-list{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:6px;
+    }
+    .asset{
+      background:#030f20;
+      border-radius:6px;
+      padding:4px;
+      text-align:center;
+      cursor:grab;
+      border:1px solid transparent;
+      font-size:11px;
+    }
+    .asset img{
+      width:100%;
+      border-radius:4px;
+      pointer-events:none;
+    }
+    .asset.dragging{
+      opacity:0.5;
+      border-color:#1abc9c;
+    }
+
+    /* ক্যানভাস এরিয়া */
+    #scenePanel{
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    #sceneToolbar{
+      font-size:12px;
+      background:#030d1e;
+      border-radius:6px;
+      padding:4px 8px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+    }
+    #sceneArea{
+      flex:1;
+      background:#000;
+      border-radius:8px;
+      border:1px solid #0b1c33;
+      position:relative;
+      overflow:hidden;
+    }
+    #sceneCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+      background:#091a2e;
+    }
+
+    .object-box{
+      position:absolute;
+      border:2px solid transparent;
+      cursor:move;
+      transform-origin:center center;
+    }
+    .object-box.selected{
+      border-color:#ffd32a;
+    }
+    .object-box img{
+      width:100%;height:100%;
+      pointer-events:none;user-select:none;
+    }
+
+    /* ডান পাশে প্রপার্টি বার – সরল */
+    #propsBar{
+      position:absolute;
+      right:8px;bottom:8px;
+      background:rgba(2,9,21,0.9);
+      border-radius:8px;
+      padding:6px 8px;
+      font-size:11px;
+      border:1px solid #133354;
+      min-width:180px;
+    }
+    #propsBar input[type=range]{
+      width:100%;
+    }
+    #propsBar-row{
+      margin-bottom:4px;
+    }
+
+    footer{
+      font-size:11px;text-align:center;padding:4px 0;
+      background:#02040a;color:#888;
+    }
+  </style>
+</head>
+<body>
+<header>
+  <div class="brand">PNG Islamic Cartoon Studio</div>
+  <button onclick="downloadPNG()">Download Scene</button>
+</header>
+
+<div class="layout">
+  <!-- বাম: PNG লিস্ট -->
+  <div class="panel">
+    <h2>PNG চরিত্র / অবজেক্ট</h2>
+    <p class="sub">ড্র্যাগ করে ডান পাশের সিনে ফেলে দাও।</p>
+    <div class="asset-list">
+      <!-- এখানেই তোমার PNG গুলোর নাম বসাও -->
+      <div class="asset" draggable="true" data-src="images/boy.png">
+        <img src="images/boy.png" alt="Boy"> ছেলে
+      </div>
+      <div class="asset" draggable="true" data-src="images/girl.png">
+        <img src="images/girl.png" alt="Girl"> মেয়ে
+      </div>
+      <div class="asset" draggable="true" data-src="images/imam.png">
+        <img src="images/imam.png" alt="Imam"> ইমাম
+      </div>
+      <div class="asset" draggable="true" data-src="images/mother.png">
+        <img src="images/mother.png" alt="Mother"> আম্মু
+      </div>
+      <!-- আরও PNG যোগ করতে চাইলে এই div কপি করে শুধু ফাইলের নাম বদলাও -->
+    </div>
+  </div>
+
+  <!-- ডান: সিন + প্রপার্টি -->
+  <div id="scenePanel" class="panel">
+    <div id="sceneToolbar">
+      <span>সিন এডিটর (মাউস দিয়ে ড্র্যাগ করো, নিচের স্লাইডার দিয়ে সাইজ/ঘোরানো)</span>
+      <span id="info">০ অবজেক্ট</span>
+    </div>
+    <div id="sceneArea">
+      <canvas id="sceneCanvas"></canvas>
+
+      <div id="propsBar" style="display:none;">
+        <div id="propsTitle" style="margin-bottom:4px;">কিছু সিলেক্ট করো…</div>
+        <div id="propsContent" style="display:none;">
+          <div id="propsBar-row">
+            X: <span id="posXText">0</span> | Y: <span id="posYText">0</span>
+          </div>
+          <div id="propsBar-row">
+            Scale
+            <input id="scaleRange" type="range" min="20" max="200" value="100">
+          </div>
+          <div id="propsBar-row">
+            Rotation
+            <input id="rotRange" type="range" min="-45" max="45" value="0">
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>ডাউনলোড করা PNG গুলো এভাবে ফ্রি ভাবে ব্যবহার করে তোমার নিজস্ব ইসলামিক কার্টুন সিন বানাও।</footer>
+
+<script>
+  const canvas = document.getElementById("sceneCanvas");
+  const sceneArea = document.getElementById("sceneArea");
+  const ctx = canvas.getContext("2d");
+
+  let objects = [];
+  let selectedId = null;
+  let draggingObj = null;
+  let dragOffset = {x:0,y:0};
+  let idCounter = 1;
+
+  function resizeCanvas(){
+    canvas.width = sceneArea.clientWidth;
+    canvas.height = sceneArea.clientHeight;
+    drawScene();
+  }
+  window.addEventListener("resize",resizeCanvas);
+  resizeCanvas();
+
+  // PNG গুলো ড্র্যাগ করার জন্য
+  document.querySelectorAll(".asset").forEach(asset=>{
+    asset.addEventListener("dragstart",e=>{
+      asset.classList.add("dragging");
+      e.dataTransfer.setData("text/plain", asset.dataset.src);
+    });
+    asset.addEventListener("dragend",()=>asset.classList.remove("dragging"));
+  });
+
+  sceneArea.addEventListener("dragover",e=>e.preventDefault());
+  sceneArea.addEventListener("drop",e=>{
+    e.preventDefault();
+    const src = e.dataTransfer.getData("text/plain");
+    const rect = sceneArea.getBoundingClientRect();
+    addObject(src, e.clientX-rect.left, e.clientY-rect.top);
+  });
+
+  function addObject(src,x,y){
+    const img = new Image();
+    img.src = src;
+    img.onload = ()=>{
+      const obj = {
+        id:idCounter++,
+        img,
+        x,
+        y,
+        scale:0.6,
+        rotation:0,
+        w:img.width,
+        h:img.height
+      };
+      objects.push(obj);
+      selectedId = obj.id;
+      updateInfo();
+      drawScene();
+      updatePropsUI();
+    };
+  }
+
+  function updateInfo(){
+    document.getElementById("info").textContent = objects.length+" অবজেক্ট";
+  }
+
+  function drawScene(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    objects.forEach(o=>{
+      ctx.save();
+      const w = o.w*o.scale;
+      const h = o.h*o.scale;
+      ctx.translate(o.x,o.y);
+      ctx.rotate(o.rotation*Math.PI/180);
+      ctx.drawImage(o.img,-w/2,-h/2,w,h);
+      ctx.restore();
+    });
+    syncBoxes();
+  }
+
+  function syncBoxes(){
+    document.querySelectorAll(".object-box").forEach(b=>b.remove());
+    objects.forEach(o=>{
+      const box = document.createElement("div");
+      box.className="object-box"+(o.id===selectedId?" selected":"");
+      const w = o.w*o.scale;
+      const h = o.h*o.scale;
+      box.style.width=w+"px";
+      box.style.height=h+"px";
+      box.style.left=(o.x-w/2)+"px";
+      box.style.top=(o.y-h/2)+"px";
+      box.style.transform=`rotate(${o.rotation}deg)`;
+      box.dataset.id=o.id;
+      box.addEventListener("mousedown",startDrag);
+      box.addEventListener("click",e=>{
+        e.stopPropagation();
+        selectedId=o.id;
+        updatePropsUI();
+        drawScene();
+      });
+      sceneArea.appendChild(box);
+    });
+  }
+
+  sceneArea.addEventListener("mousedown",e=>{
+    if(e.target===sceneArea || e.target===canvas){
+      selectedId=null;
+      updatePropsUI();
+      drawScene();
+    }
+  });
+
+  function startDrag(e){
+    e.preventDefault();
+    const id = parseInt(this.dataset.id);
+    const obj = objects.find(o=>o.id===id);
+    if(!obj) return;
+    selectedId = id;
+    updatePropsUI();
+    draggingObj=obj;
+    const rect = sceneArea.getBoundingClientRect();
+    const mouseX = e.clientX-rect.left;
+    const mouseY = e.clientY-rect.top;
+    dragOffset.x = mouseX-obj.x;
+    dragOffset.y = mouseY-obj.y;
+    window.addEventListener("mousemove",onDragMove);
+    window.addEventListener("mouseup",stopDrag);
+  }
+
+  function onDragMove(e){
+    if(!draggingObj) return;
+    const rect = sceneArea.getBoundingClientRect();
+    const mouseX = e.clientX-rect.left;
+    const mouseY = e.clientY-rect.top;
+    draggingObj.x = mouseX-dragOffset.x;
+    draggingObj.y = mouseY-dragOffset.y;
+    updatePropsNumbers();
+    drawScene();
+  }
+
+  function stopDrag(){
+    window.removeEventListener("mousemove",onDragMove);
+    window.removeEventListener("mouseup",stopDrag);
+    draggingObj=null;
+  }
+
+  // প্রপার্টি UI
+  const propsBar = document.getElementById("propsBar");
+  const propsTitle = document.getElementById("propsTitle");
+  const propsContent = document.getElementById("propsContent");
+  const posXText = document.getElementById("posXText");
+  const posYText = document.getElementById("posYText");
+  const scaleRange = document.getElementById("scaleRange");
+  const rotRange = document.getElementById("rotRange");
+
+  function updatePropsUI(){
+    if(!selectedId){
+      propsBar.style.display="none";
+      return;
+    }
+    const obj = objects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    propsBar.style.display="block";
+    propsContent.style.display="block";
+    propsTitle.textContent="Object ID: "+obj.id;
+    updatePropsNumbers();
+    scaleRange.value = Math.round(obj.scale*100);
+    rotRange.value = obj.rotation;
+  }
+
+  function updatePropsNumbers(){
+    const obj = objects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    posXText.textContent = Math.round(obj.x);
+    posYText.textContent = Math.round(obj.y);
+  }
+
+  scaleRange.addEventListener("input",()=>{
+    const obj = objects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.scale = parseFloat(scaleRange.value)/100;
+    drawScene();
+  });
+
+  rotRange.addEventListener("input",()=>{
+    const obj = objects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.rotation = parseFloat(rotRange.value);
+    drawScene();
+  });
+
+  // সিন PNG হিসেবে ডাউনলোড
+  function downloadPNG(){
+    const link = document.createElement("a");
+    link.download = "scene.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
 </script>
+</body>
+</html>
+
 </body>
 </html>
