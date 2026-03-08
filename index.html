@@ -2,249 +2,752 @@
 <html lang="bn">
 <head>
   <meta charset="UTF-8">
-  <title>Islamic Cartoon World</title>
+  <title>Free Islamic Cartoon Editor</title>
   <style>
     *{margin:0;padding:0;box-sizing:border-box;font-family:"Segoe UI",sans-serif;}
     body{
-      min-height:100vh;
-      color:#fff;
-      background:#021826;
-    }
-    /* উপরের ন্যাভ */
-    .navbar{
-      position:fixed;top:0;left:0;width:100%;
-      background:rgba(1,10,25,0.92);
-      display:flex;justify-content:space-between;align-items:center;
-      padding:10px 30px;z-index:1000;
-      box-shadow:0 2px 8px rgba(0,0,0,0.4);
-    }
-    .logo{font-weight:700;font-size:20px;color:#ffd32a;}
-    .navbar a{
-      color:#fff;text-decoration:none;margin-left:18px;font-size:14px;
-    }
-    .navbar a:hover{color:#ffd32a;}
-
-    /* হিরো – ইসলামিক ব্যাকগ্রাউন্ড */
-    .hero{
       height:100vh;
-      padding-top:70px;
-      background:url("YOUR_ISLAMIC_BACKGROUND.jpg") center/cover no-repeat fixed;
-      display:flex;align-items:center;justify-content:center;
-    }
-    .hero-box{
-      background:rgba(0,0,0,0.55);
-      padding:25px 30px;border-radius:12px;text-align:center;
-      max-width:420px;
-    }
-    .hero-box h1{font-size:30px;margin-bottom:10px;}
-    .hero-box p{font-size:14px;margin-bottom:15px;}
-    .hero-box button{
-      padding:10px 22px;border:none;border-radius:20px;
-      background:#ffd32a;color:#000;font-weight:600;cursor:pointer;
+      display:flex;
+      flex-direction:column;
+      background:#020813;
+      color:#f5f5f5;
+      overflow:hidden;
     }
 
-    section{padding:60px 16px;}
-    h2{text-align:center;margin-bottom:20px;font-size:22px;}
-
-    /* ভিডিও গ্যালারি */
-    .videos-section{background:rgba(0,0,0,0.35);}
-    .video-grid{
-      max-width:1100px;margin:0 auto;
-      display:grid;grid-template-columns:2fr 1fr;gap:18px;
+    /* টপ বার */
+    header{
+      padding:8px 16px;
+      background:#02040a;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      box-shadow:0 2px 6px rgba(0,0,0,0.5);
+      z-index:10;
     }
-    .featured-video iframe{
-      width:100%;height:320px;border-radius:12px;border:0;
-    }
-    .video-list{
-      display:flex;flex-direction:column;gap:10px;
-      max-height:320px;overflow-y:auto;
-    }
-    .video-thumb{
-      display:flex;gap:10px;align-items:center;
-      background:rgba(255,255,255,0.06);
-      padding:6px;border-radius:8px;cursor:pointer;
-      transition:background 0.2s,transform 0.2s;
-    }
-    .video-thumb:hover{
-      background:rgba(255,211,42,0.18);
-      transform:translateY(-1px);
-    }
-    .video-thumb img{width:115px;border-radius:6px;}
-    .video-thumb p{font-size:13px;}
-
-    /* অডিও / ভয়েস */
-    .audio-section{background:rgba(0,0,0,0.25);}
-    .audio-card{
-      max-width:520px;margin:0 auto;
-      background:rgba(1,18,40,0.9);
-      padding:20px;border-radius:14px;
-    }
-    .controls{
-      display:flex;justify-content:center;gap:10px;margin-bottom:15px;
-    }
-    .controls button{
-      padding:8px 20px;border:none;border-radius:20px;
-      background:#ffd32a;color:#000;cursor:pointer;font-weight:600;
-    }
-    .slider-group{
-      display:flex;align-items:center;justify-content:space-between;
-      margin-bottom:10px;font-size:13px;
-    }
-    .slider-group input[type=range]{width:60%;}
-    .note{text-align:center;font-size:11px;opacity:0.8;margin-top:5px;}
-
-    /* About */
-    .about-section{background:rgba(0,0,0,0.3);text-align:center;}
-    .about-section p{
-      max-width:720px;margin:0 auto;font-size:14px;line-height:1.6;
+    .brand{font-weight:700;color:#ffd32a;}
+    header button{
+      padding:6px 14px;border-radius:18px;border:none;
+      background:#1abc9c;color:#000;font-weight:600;
+      cursor:pointer;font-size:13px;
     }
 
-    .footer{
-      text-align:center;padding:18px;background:#010812;
+    /* মূল লে-আউট */
+    .studio{
+      flex:1;
+      display:grid;
+      grid-template-columns:260px 1fr 260px;
+      grid-template-rows:1fr 160px;
+      grid-template-areas:
+        "left center right"
+        "timeline timeline timeline";
+      gap:6px;
+      padding:6px;
+    }
+    .panel{
+      background:#020915;
+      border-radius:8px;
+      border:1px solid #0b1c33;
+      padding:8px;
+      overflow:auto;
+    }
+    #leftPanel{grid-area:left;}
+    #centerPanel{grid-area:center;display:flex;flex-direction:column;}
+    #rightPanel{grid-area:right;}
+    #timelinePanel{grid-area:timeline;}
+
+    h2{
+      font-size:14px;margin-bottom:6px;
+      color:#ffeaa7;
+    }
+    .sub{
+      font-size:11px;opacity:0.8;margin-bottom:6px;
+    }
+
+    /* ক্যারেক্টার লিস্ট */
+    .asset-grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:6px;
+    }
+    .asset{
+      background:#030f20;
+      border-radius:6px;
+      padding:4px;
+      text-align:center;
+      font-size:11px;
+      cursor:grab;
+      border:1px solid transparent;
+    }
+    .asset img{
+      width:100%;
+      border-radius:4px;
+      pointer-events:none;
+    }
+    .asset.dragging{
+      opacity:0.5;
+      border-color:#1abc9c;
+    }
+
+    /* ক্যানভাস এরিয়া */
+    #sceneWrapper{
+      flex:1;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    #sceneToolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+      background:#030d1e;
+      border-radius:6px;
+      padding:4px 8px;
+    }
+    #sceneArea{
+      flex:1;
+      background:#000;
+      border-radius:8px;
+      border:1px solid #0b1c33;
+      position:relative;
+      overflow:hidden;
+    }
+    #sceneCanvas{
+      width:100%;
+      height:100%;
+      display:block;
+      background:#091a2e;
+    }
+
+    /* ডান দিক – প্রোপার্টিজ */
+    .field{
+      margin-bottom:6px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
       font-size:12px;
     }
+    .field input[type="number"]{
+      width:70px;
+      background:#020813;
+      border:1px solid #133354;
+      color:#fff;border-radius:4px;
+      padding:2px 4px;font-size:11px;
+    }
+    .field input[type="range"]{
+      flex:1;margin-left:8px;
+    }
+    .pill-row{
+      display:flex;flex-wrap:wrap;gap:4px;margin-bottom:8px;
+    }
+    .pill{
+      padding:4px 10px;font-size:11px;border-radius:99px;
+      border:1px solid #34495e;cursor:pointer;
+    }
+    .pill.active{background:#1abc9c;color:#000;border-color:#1abc9c;}
 
-    @media(max-width:768px){
-      .video-grid{grid-template-columns:1fr;}
-      .hero{padding:90px 12px 40px;}
-      .hero-box{max-width:100%;}
+    /* অবজেক্ট বাউন্ডিং */
+    .object-box{
+      position:absolute;
+      border:2px solid transparent;
+      transform-origin:center center;
+      cursor:move;
+    }
+    .object-box.selected{
+      border-color:#ffd32a;
+    }
+    .object-box img{
+      width:100%;height:100%;pointer-events:none;
+      user-select:none;
+    }
+
+    /* টাইমলাইন */
+    #timelinePanel{
+      background:#020915;
+      padding:6px;
+      border-radius:8px;
+      border:1px solid #0b1c33;
+      display:flex;
+      flex-direction:column;
+      gap:4px;
+    }
+    #timelineToolbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      font-size:12px;
+    }
+    #timelineToolbar button{
+      padding:4px 12px;border-radius:16px;border:none;
+      background:#ffd32a;color:#000;font-weight:600;
+      cursor:pointer;font-size:11px;
+    }
+    #trackArea{
+      flex:1;
+      display:flex;
+      gap:4px;
+      font-size:11px;
+    }
+    .track-list{
+      width:140px;
+      border-right:1px solid #1f2f46;
+      padding-right:4px;
+      overflow:auto;
+    }
+    .track-row{
+      padding:2px 4px;
+      border-radius:3px;
+      margin-bottom:2px;
+      background:#020f1f;
+      display:flex;
+      justify-content:space-between;
+    }
+    .track-row span{max-width:90px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;}
+
+    .timeline-grid{
+      flex:1;
+      position:relative;
+      background:#020611;
+      border-radius:4px;
+      overflow:hidden;
+    }
+    .timeline-grid::before{
+      content:"";
+      position:absolute;inset:0;
+      background-image:linear-gradient(to right,rgba(255,255,255,0.05) 1px,transparent 1px);
+      background-size:40px 100%;
+      pointer-events:none;
+    }
+    .keyframe{
+      position:absolute;
+      width:8px;height:8px;
+      background:#e74c3c;
+      border-radius:50%;
+      transform:translate(-50%,-50%);
+      cursor:pointer;
+    }
+    .playhead{
+      position:absolute;
+      top:0;width:2px;
+      background:#1abc9c;
+      height:100%;
+      pointer-events:none;
+    }
+
+    footer{
+      font-size:11px;text-align:center;padding:3px 0;
+      background:#02040a;color:#888;
+    }
+
+    @media(max-width:1100px){
+      .studio{
+        grid-template-columns:220px 1fr;
+        grid-template-rows:1fr 140px 220px;
+        grid-template-areas:
+          "left center"
+          "timeline timeline"
+          "right right";
+      }
     }
   </style>
 </head>
 <body>
+<header>
+  <div class="brand">Free Islamic Cartoon Editor</div>
+  <button onclick="exportScreenshot()">Download Scene (PNG)</button>
+</header>
 
-  <header class="navbar">
-    <div class="logo">Islamic Cartoon World</div>
-    <nav>
-      <a href="#videos">ভিডিও</a>
-      <a href="#audio">ভয়েস</a>
-      <a href="#about">উদ্দেশ্য</a>
-    </nav>
-  </header>
+<div class="studio">
+  <!-- বাম প্যানেল: ক্যারেক্টার + ব্যাকগ্রাউন্ড -->
+  <div id="leftPanel" class="panel">
+    <h2>ক্যারেক্টার ও অবজেক্ট</h2>
+    <p class="sub">ড্র্যাগ করে সিনে ফেলে দাও। নিজের PNG গুলো assets ফোল্ডারে রাখো।</p>
 
-  <!-- হিরো সেকশন -->
-  <section class="hero">
-    <div class="hero-box">
-      <h1>ইসলামিক কার্টুন এনিমেশন</h1>
-      <p>বাচ্চাদের জন্য হালাল ও শিক্ষামূলক কার্টুন, নাশিদ ও কাহিনী – সব এক প্ল্যাটফর্মে।</p>
-      <button onclick="document.getElementById('videos').scrollIntoView({behavior:'smooth'})">
-        ভিডিও দেখুন
-      </button>
-    </div>
-  </section>
-
-  <!-- ভিডিও গ্যালারি -->
-  <section id="videos" class="videos-section">
-    <h2>আমাদের ইসলামিক কার্টুন</h2>
-    <div class="video-grid">
-      <div class="featured-video">
-        <iframe id="mainVideo"
-          src="https://www.youtube.com/embed/VIDEO_ID_1"
-          title="Islamic Cartoon 1"
-          allowfullscreen>
-        </iframe>
+    <h3 style="font-size:12px;margin:4px 0;">Islamic Characters</h3>
+    <div class="asset-grid" id="characterAssets">
+      <!-- উদাহরণ ইমেজ – নিজের ইমেজ পাথ বসাও -->
+      <div class="asset" draggable="true" data-type="character" data-src="assets/boy.png">
+        <img src="assets/boy.png" alt="Boy">
+        ছেলে
       </div>
-
-      <div class="video-list">
-        <div class="video-thumb" data-video="https://www.youtube.com/embed/VIDEO_ID_1">
-          <img src="https://img.youtube.com/vi/VIDEO_ID_1/hqdefault.jpg" alt="Cartoon 1">
-          <p>কার্টুন ১ – কুরআনের গল্প</p>
-        </div>
-
-        <div class="video-thumb" data-video="https://www.youtube.com/embed/VIDEO_ID_2">
-          <img src="https://img.youtube.com/vi/VIDEO_ID_2/hqdefault.jpg" alt="Cartoon 2">
-          <p>কার্টুন ২ – নবীদের কাহিনী</p>
-        </div>
-
-        <div class="video-thumb" data-video="https://www.youtube.com/embed/VIDEO_ID_3">
-          <img src="https://img.youtube.com/vi/VIDEO_ID_3/hqdefault.jpg" alt="Cartoon 3">
-          <p>কার্টুন ৩ – আখলাক ও আদব</p>
-        </div>
+      <div class="asset" draggable="true" data-type="character" data-src="assets/girl.png">
+        <img src="assets/girl.png" alt="Girl">
+        মেয়ে
+      </div>
+      <div class="asset" draggable="true" data-type="character" data-src="assets/imam.png">
+        <img src="assets/imam.png" alt="Imam">
+        ইমাম
+      </div>
+      <div class="asset" draggable="true" data-type="character" data-src="assets/mother.png">
+        <img src="assets/mother.png" alt="Mother">
+        আম্মু
       </div>
     </div>
-  </section>
 
-  <!-- ভয়েস চেঞ্জার অডিও -->
-  <section id="audio" class="audio-section">
-    <h2>ভয়েস সহ ইসলামিক অডিও</h2>
-    <div class="audio-card">
-      <audio id="audioPlayer" src="audio/sample.mp3"></audio>
-
-      <div class="controls">
-        <button id="playBtn">Play</button>
-        <button id="pauseBtn">Pause</button>
+    <h3 style="font-size:12px;margin:6px 0;">Islamic Backgrounds</h3>
+    <div class="asset-grid" id="bgAssets">
+      <div class="asset" draggable="true" data-type="background" data-src="assets/village.png">
+        <img src="assets/village_thumb.png" alt="Village">
+        গ্রাম
       </div>
-
-      <div class="slider-group">
-        <span>Pitch (ভয়েস চেঞ্জ)</span>
-        <input type="range" id="pitchRange" min="0.5" max="1.8" step="0.1" value="1">
-        <span id="pitchValue">1x</span>
+      <div class="asset" draggable="true" data-type="background" data-src="assets/mosque.png">
+        <img src="assets/mosque_thumb.png" alt="Mosque">
+        মসজিদ
       </div>
-
-      <div class="slider-group">
-        <span>Speed (গতি)</span>
-        <input type="range" id="speedRange" min="0.5" max="1.5" step="0.1" value="1">
-        <span id="speedValue">1x</span>
+      <div class="asset" draggable="true" data-type="background" data-src="assets/room.png">
+        <img src="assets/room_thumb.png" alt="Room">
+        ঘর
       </div>
-
-      <p class="note">সাধারণ ব্রাউজার ভয়েস চেঞ্জ Web Audio API দিয়ে করা – ইউটিউবে আপলোডের আগে আলাদা সফটওয়্যারে ভয়েস ঠিক করে নিলে আরও ভালো হবে।</p>
+      <div class="asset" draggable="true" data-type="background" data-src="assets/night.png">
+        <img src="assets/night_thumb.png" alt="Night">
+        রাতের শহর
+      </div>
     </div>
-  </section>
+  </div>
 
-  <!-- উদ্দেশ্য -->
-  <section id="about" class="about-section">
-    <h2>আমাদের উদ্দেশ্য</h2>
-    <p>
-      এই প্ল্যাটফর্মের সব কার্টুন ও চরিত্র ইসলামিক আদব, পর্দা ও হালাল কন্টেন্টের ওপর ভিত্তি করে তৈরি করার চেষ্টা করা হবে।
-      যেন বাচ্চারা বিনোদনের পাশাপাশি আল্লাহভীতি, নামাজ, দোআ ও সুন্দর চরিত্র শিখতে পারে।
-    </p>
-  </section>
+  <!-- সেন্টার: সিন ক্যানভাস -->
+  <div id="centerPanel" class="panel">
+    <div id="sceneWrapper">
+      <div id="sceneToolbar">
+        <span>সিন এডিটর (ড্র্যাগ করে অবস্থান ঠিক করো, স্কেল স্লাইডার ডান দিকে)</span>
+        <span id="sceneInfo">০ অবজেক্ট</span>
+      </div>
+      <div id="sceneArea">
+        <canvas id="sceneCanvas"></canvas>
+      </div>
+    </div>
+  </div>
 
-  <footer class="footer">
-    © ২০২৬ Islamic Cartoon World
-  </footer>
+  <!-- ডান: নির্বাচিত অবজেক্টের সেটিং -->
+  <div id="rightPanel" class="panel">
+    <h2>নির্বাচিত অবজেক্ট</h2>
+    <p class="sub">সিন থেকে কোনো ক্যারেক্টার ক্লিক করলে এখানে কন্ট্রোল আসবে।</p>
 
-  <script>
-    // ভিডিও থাম্বনেইল ক্লিক
-    const thumbs = document.querySelectorAll(".video-thumb");
-    const mainVideo = document.getElementById("mainVideo");
+    <div id="noSelection" style="font-size:12px;opacity:0.8;">
+      এখনো কিছু সিলেক্ট করো নি।
+    </div>
 
-    thumbs.forEach(t => {
-      t.addEventListener("click", () => {
-        const url = t.getAttribute("data-video");
-        mainVideo.src = url;
+    <div id="selectionControls" style="display:none;font-size:12px;">
+      <div class="field">
+        <span>Layer:</span>
+        <div class="pill-row">
+          <div class="pill" onclick="changeLayer('up')">উপরে</div>
+          <div class="pill" onclick="changeLayer('down')">নিচে</div>
+        </div>
+      </div>
+
+      <div class="field">
+        <span>X:</span>
+        <input type="number" id="posX" step="1">
+      </div>
+      <div class="field">
+        <span>Y:</span>
+        <input type="number" id="posY" step="1">
+      </div>
+
+      <div class="field">
+        <span>Scale:</span>
+        <input type="range" id="scaleRange" min="20" max="200" value="100">
+      </div>
+
+      <div class="field">
+        <span>Rotation:</span>
+        <input type="range" id="rotRange" min="-45" max="45" value="0">
+      </div>
+
+      <div class="field">
+        <button onclick="deleteSelected()" style="background:#e74c3c;color:#fff;border:none;border-radius:16px;padding:4px 10px;font-size:11px;cursor:pointer;">
+          রিমুভ করো
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- টাইমলাইন -->
+  <div id="timelinePanel">
+    <div id="timelineToolbar">
+      <div>টাইমলাইন (খুব সিম্পল – শুরু অবস্থান আর শেষ অবস্থান)</div>
+      <div>
+        <button onclick="addKeyframe()">Add Keyframe</button>
+        <button onclick="playAnimation()">Play</button>
+      </div>
+    </div>
+
+    <div id="trackArea">
+      <div class="track-list" id="trackList">
+        <!-- অবজেক্ট অনুযায়ী অটো তৈরি হবে -->
+      </div>
+      <div class="timeline-grid" id="timelineGrid">
+        <div class="playhead" id="playhead" style="left:0;"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<footer>এই প্রোজেক্ট ফ্রি – তুমি চাইলে নিজের সার্ভারে / লোকালহোস্টে চালিয়ে ইসলামিক কার্টুন বানাতে পারো।</footer>
+
+<script>
+  // === বেসিক ভ্যারিয়েবল ===
+  const canvas = document.getElementById("sceneCanvas");
+  const sceneArea = document.getElementById("sceneArea");
+  const ctx = canvas.getContext("2d");
+
+  let sceneObjects = [];     // সব অবজেক্ট
+  let selectedId = null;     // কোনটা সিলেক্টেড
+  let draggingObj = null;    // ড্র্যাগ করার সময়
+  let dragOffset = {x:0,y:0};
+
+  // ক্যানভাস সাইজ ঠিক করা
+  function resizeCanvas(){
+    canvas.width = sceneArea.clientWidth;
+    canvas.height = sceneArea.clientHeight;
+    drawScene();
+  }
+  window.addEventListener("resize",resizeCanvas);
+  resizeCanvas();
+
+  // === অ্যাসেট ড্র্যাগ–ড্রপ ===
+  const assets = document.querySelectorAll(".asset");
+  assets.forEach(a=>{
+    a.addEventListener("dragstart",e=>{
+      a.classList.add("dragging");
+      e.dataTransfer.setData("text/plain", JSON.stringify({
+        type:a.dataset.type,
+        src:a.dataset.src
+      }));
+    });
+    a.addEventListener("dragend",()=>a.classList.remove("dragging"));
+  });
+
+  sceneArea.addEventListener("dragover",e=>{
+    e.preventDefault();
+  });
+  sceneArea.addEventListener("drop",e=>{
+    e.preventDefault();
+    const data = JSON.parse(e.dataTransfer.getData("text/plain"));
+    const rect = sceneArea.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    addObjectToScene(data.type,data.src,x,y);
+  });
+
+  let idCounter = 1;
+
+  function addObjectToScene(type,src,x,y){
+    const img = new Image();
+    img.src = src;
+    img.onload = ()=>{
+      const baseSize = type==="background" ? canvas.width : img.width;
+      const scale = type==="background" ? canvas.width/img.width : 0.5;
+      const obj = {
+        id:idCounter++,
+        type,
+        img,
+        x,
+        y,
+        scale:scale,
+        rotation:0,
+        width:img.width,
+        height:img.height,
+        keyframes:[]
+      };
+      if(type==="background"){
+        obj.x = canvas.width/2;
+        obj.y = canvas.height/2;
+      }
+      sceneObjects.push(obj);
+      selectedId = obj.id;
+      updateSelectionUI();
+      updateTrackList();
+      drawScene();
+      updateSceneInfo();
+    };
+  }
+
+  function updateSceneInfo(){
+    document.getElementById("sceneInfo").textContent = sceneObjects.length+" অবজেক্ট";
+  }
+
+  // === সিন ড্র করা ===
+  function drawScene(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    // ব্যাকগ্রাউন্ড আগে, ক্যারেক্টার পরে
+    const ordered = sceneObjects.slice().sort((a,b)=>a.type==="background"?-1:1);
+    ordered.forEach(obj=>{
+      ctx.save();
+      const w = obj.width*obj.scale;
+      const h = obj.height*obj.scale;
+      ctx.translate(obj.x,obj.y);
+      ctx.rotate(obj.rotation*Math.PI/180);
+      ctx.drawImage(obj.img,-w/2,-h/2,w,h);
+      ctx.restore();
+    });
+
+    // DOM বাউন্ডিং বক্স আপডেট
+    syncObjectBoxes();
+  }
+
+  // === DOM বাউন্ডিং বক্স ===
+  function syncObjectBoxes(){
+    document.querySelectorAll(".object-box").forEach(b=>b.remove());
+    sceneObjects.forEach(obj=>{
+      const box = document.createElement("div");
+      box.className = "object-box"+(obj.id===selectedId?" selected":"");
+      const w = obj.width*obj.scale;
+      const h = obj.height*obj.scale;
+      box.style.width = w+"px";
+      box.style.height = h+"px";
+      box.style.left = (obj.x - w/2)+"px";
+      box.style.top = (obj.y - h/2)+"px";
+      box.style.transform = `rotate(${obj.rotation}deg)`;
+      box.dataset.id = obj.id;
+      box.addEventListener("mousedown",startDragObject);
+      box.addEventListener("click",e=>{
+        e.stopPropagation();
+        selectedId = obj.id;
+        updateSelectionUI();
+        drawScene();
+      });
+      sceneArea.appendChild(box);
+    });
+  }
+
+  sceneArea.addEventListener("mousedown",e=>{
+    // ফাঁকা জায়গায় ক্লিক করলে সিলেকশন তুলে নাও
+    if(e.target === sceneArea || e.target === canvas){
+      selectedId = null;
+      updateSelectionUI();
+      drawScene();
+    }
+  });
+
+  function startDragObject(e){
+    e.preventDefault();
+    const id = parseInt(this.dataset.id);
+    const obj = sceneObjects.find(o=>o.id===id);
+    if(!obj) return;
+    selectedId = id;
+    updateSelectionUI();
+    draggingObj = obj;
+    const rect = sceneArea.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    dragOffset.x = mouseX - obj.x;
+    dragOffset.y = mouseY - obj.y;
+    window.addEventListener("mousemove",onDragMove);
+    window.addEventListener("mouseup",stopDragObject);
+  }
+
+  function onDragMove(e){
+    if(!draggingObj) return;
+    const rect = sceneArea.getBoundingClientRect();
+    const mouseX = e.clientX - rect.left;
+    const mouseY = e.clientY - rect.top;
+    draggingObj.x = mouseX - dragOffset.x;
+    draggingObj.y = mouseY - dragOffset.y;
+    updateSelectionInputs();
+    drawScene();
+  }
+
+  function stopDragObject(){
+    window.removeEventListener("mousemove",onDragMove);
+    window.removeEventListener("mouseup",stopDragObject);
+    draggingObj = null;
+  }
+
+  // === সিলেকশন UI ===
+  const noSelection = document.getElementById("noSelection");
+  const selectionControls = document.getElementById("selectionControls");
+  const posXInput = document.getElementById("posX");
+  const posYInput = document.getElementById("posY");
+  const scaleRange = document.getElementById("scaleRange");
+  const rotRange = document.getElementById("rotRange");
+
+  function updateSelectionUI(){
+    if(!selectedId){
+      noSelection.style.display="block";
+      selectionControls.style.display="none";
+      return;
+    }
+    noSelection.style.display="none";
+    selectionControls.style.display="block";
+    updateSelectionInputs();
+  }
+
+  function updateSelectionInputs(){
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    posXInput.value = Math.round(obj.x);
+    posYInput.value = Math.round(obj.y);
+    scaleRange.value = Math.round(obj.scale*100);
+    rotRange.value = obj.rotation;
+  }
+
+  posXInput.addEventListener("input",()=>{
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.x = parseFloat(posXInput.value)||0;
+    drawScene();
+  });
+  posYInput.addEventListener("input",()=>{
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.y = parseFloat(posYInput.value)||0;
+    drawScene();
+  });
+  scaleRange.addEventListener("input",()=>{
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.scale = parseFloat(scaleRange.value)/100;
+    drawScene();
+  });
+  rotRange.addEventListener("input",()=>{
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    obj.rotation = parseFloat(rotRange.value);
+    drawScene();
+  });
+
+  function deleteSelected(){
+    if(!selectedId) return;
+    sceneObjects = sceneObjects.filter(o=>o.id!==selectedId);
+    selectedId = null;
+    updateSelectionUI();
+    updateTrackList();
+    drawScene();
+    updateSceneInfo();
+  }
+
+  function changeLayer(dir){
+    if(!selectedId) return;
+    const idx = sceneObjects.findIndex(o=>o.id===selectedId);
+    if(idx===-1) return;
+    if(dir==="up" && idx < sceneObjects.length-1){
+      [sceneObjects[idx],sceneObjects[idx+1]] = [sceneObjects[idx+1],sceneObjects[idx]];
+    }else if(dir==="down" && idx>0){
+      [sceneObjects[idx],sceneObjects[idx-1]] = [sceneObjects[idx-1],sceneObjects[idx]];
+    }
+    updateTrackList();
+    drawScene();
+  }
+
+  // === টাইমলাইন ও এনিমেশন (খুব সিম্পল) ===
+  const trackListEl = document.getElementById("trackList");
+  const timelineGrid = document.getElementById("timelineGrid");
+  const playhead = document.getElementById("playhead");
+  const timelineDuration = 5; // সেকেন্ড
+  let playing = false;
+  let playStartTime = 0;
+
+  function updateTrackList(){
+    trackListEl.innerHTML = "";
+    sceneObjects.forEach(o=>{
+      const row = document.createElement("div");
+      row.className="track-row";
+      row.dataset.id=o.id;
+      const span = document.createElement("span");
+      span.textContent = (o.type==="background"?"BG ":"Char ")+o.id;
+      const small = document.createElement("small");
+      small.textContent = o.keyframes.length+" key";
+      row.appendChild(span);
+      row.appendChild(small);
+      row.onclick=()=>{selectedId=o.id;updateSelectionUI();drawScene();}
+      trackListEl.appendChild(row);
+    });
+    renderKeyframes();
+  }
+
+  function timeToX(t){
+    const w = timelineGrid.clientWidth;
+    return (t/timelineDuration)*w;
+  }
+
+  function xToTime(x){
+    const w = timelineGrid.clientWidth;
+    return (x/w)*timelineDuration;
+  }
+
+  function addKeyframe(){
+    if(!selectedId) return;
+    const obj = sceneObjects.find(o=>o.id===selectedId);
+    if(!obj) return;
+    const t = Math.min(timelineDuration, Math.max(0, currentPlayTime()));
+    obj.keyframes.push({
+      time:t,
+      x:obj.x,
+      y:obj.y,
+      scale:obj.scale,
+      rotation:obj.rotation
+    });
+    obj.keyframes.sort((a,b)=>a.time-b.time);
+    updateTrackList();
+  }
+
+  function renderKeyframes(){
+    timelineGrid.querySelectorAll(".keyframe").forEach(k=>k.remove());
+    sceneObjects.forEach(o=>{
+      o.keyframes.forEach(k=>{
+        const dot = document.createElement("div");
+        dot.className="keyframe";
+        dot.style.left = timeToX(k.time)+"px";
+        dot.style.top = (o.type==="background"?20:40)+"px";
+        timelineGrid.appendChild(dot);
       });
     });
+  }
 
-    // অডিও কন্ট্রোল + পিচ/স্পিড
-    const audio = document.getElementById("audioPlayer");
-    const playBtn = document.getElementById("playBtn");
-    const pauseBtn = document.getElementById("pauseBtn");
-    const pitchRange = document.getElementById("pitchRange");
-    const speedRange = document.getElementById("speedRange");
-    const pitchValue = document.getElementById("pitchValue");
-    const speedValue = document.getElementById("speedValue");
+  function currentPlayTime(){
+    if(!playing) return 0;
+    return (performance.now()-playStartTime)/1000;
+  }
 
-    playBtn.addEventListener("click", ()=>audio.play());
-    pauseBtn.addEventListener("click", ()=>audio.pause());
+  function playAnimation(){
+    if(playing){playing=false;return;}
+    playing=true;
+    playStartTime = performance.now();
+    requestAnimationFrame(stepAnimation);
+  }
 
-    function updateRate(){
-      const p = parseFloat(pitchRange.value);
-      const s = parseFloat(speedRange.value);
-      // সহজভাবে – স্পিড আর পিচ একসাথে কন্ট্রোল
-      const rate = ((p + s) / 2).toFixed(2);
-      audio.playbackRate = rate;
-    }
+  function stepAnimation(){
+    if(!playing) return;
+    const t = currentPlayTime();
+    const clamped = Math.min(t,timelineDuration);
+    // প্লেহেড সরাও
+    playhead.style.left = timeToX(clamped)+"px";
 
-    pitchRange.addEventListener("input", ()=>{
-      pitchValue.textContent = pitchRange.value + "x";
-      updateRate();
+    // প্রতিটি অবজেক্টের জন্য পজিশন ইন্টারপোলেট
+    sceneObjects.forEach(o=>{
+      if(o.keyframes.length<2) return;
+      const kfs = o.keyframes;
+      let k1 = kfs[0];
+      let k2 = kfs[kfs.length-1];
+      for(let i=0;i<kfs.length-1;i++){
+        if(clamped>=kfs[i].time && clamped<=kfs[i+1].time){
+          k1 = kfs[i];k2 = kfs[i+1];break;
+        }
+      }
+      const span = k2.time-k1.time || 0.0001;
+      const f = Math.min(1,Math.max(0,(clamped-k1.time)/span));
+      o.x = k1.x + (k2.x-k1.x)*f;
+      o.y = k1.y + (k2.y-k1.y)*f;
+      o.scale = k1.scale + (k2.scale-k1.scale)*f;
+      o.rotation = k1.rotation + (k2.rotation-k1.rotation)*f;
     });
 
-    speedRange.addEventListener("input", ()=>{
-      speedValue.textContent = speedRange.value + "x";
-      updateRate();
-    });
-  </script>
+    updateSelectionInputs();
+    drawScene();
+
+    if(t < timelineDuration) requestAnimationFrame(stepAnimation);
+    else playing=false;
+  }
+
+  // === সিনকে PNG হিসেবে এক্সপোর্ট (ডাউনলোড) ===
+  function exportScreenshot(){
+    const link = document.createElement("a");
+    link.download = "scene.png";
+    link.href = canvas.toDataURL("image/png");
+    link.click();
+  }
+</script>
 </body>
 </html>
